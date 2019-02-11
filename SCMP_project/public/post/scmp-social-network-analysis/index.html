@@ -8,18 +8,18 @@
 <meta name="generator" content="Hugo 0.54.0 with theme Tranquilpeak 0.4.3-SNAPSHOT">
 <meta name="author" content="Gabriella Mourao, Mawuli Adjei">
 <meta name="keywords" content="tech">
-<meta name="description" content="HUGOMORE42">
+<meta name="description" content="Introduction In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to understand how the Twitter Users on SCMP’s account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.">
 
 
-<meta property="og:description" content="HUGOMORE42">
+<meta property="og:description" content="Introduction In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to understand how the Twitter Users on SCMP’s account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SCMP Social Network Analysis">
 <meta name="twitter:title" content="SCMP Social Network Analysis">
 <meta property="og:url" content="/post/scmp-social-network-analysis/">
 <meta property="twitter:url" content="/post/scmp-social-network-analysis/">
 <meta property="og:site_name" content="Hugo tranquilpeak theme">
-<meta property="og:description" content="HUGOMORE42">
-<meta name="twitter:description" content="HUGOMORE42">
+<meta property="og:description" content="Introduction In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to understand how the Twitter Users on SCMP’s account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.">
+<meta name="twitter:description" content="Introduction In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to understand how the Twitter Users on SCMP’s account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.">
 <meta property="og:locale" content="en-us">
 
   
@@ -252,12 +252,138 @@
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
               
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
 
 
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to understand how the Twitter Users on SCMP’s account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.</p>
+</div>
+<div id="data-extraction-and-transformation" class="section level1">
+<h1>Data Extraction and Transformation</h1>
+<p>To extract the data from Twitter, we used the package <code>rtweet</code> using the search term “SCMPNews”. The data was extract three times during the period from Dec/18 and Jan/19:<br />
+- First Extraction: 18th - December - 2018<br />
+- Second Extraction: 25th - December - 2018<br />
+- Third Extraction: 1st - January - 2019</p>
+<p>The resulting data was merged, and duplicated tweets were excluded. Besides that, from the original data extracted, the team broke it down into three different component files that was used in the further analysis:<br />
+- Vertex data: File with information about the user account like number of friends, number of tweets, account language and others.<br />
+- Edge data: File with user’s relationship trough tweets, like: retweet, reply, mention and others.<br />
+- Tweet Data: Is the original file extract using the Twitter API.</p>
+</div>
+<div id="tools" class="section level1">
+<h1>Tools</h1>
+<p>For our analysis, we had the option of choosing one of several software; - R - NodeXL - Gephi - Python</p>
+<p>NodeXL had the capability of handling most of the social network analysis we wanted to do. However, due to its limitations as an Excel plug-in in handling large amounts of data, we focused on using R for data extraction, time-series, topic modeling, natural language processing and cluster analysis. Python was used for data wrangling, and sentiment analysis under natural language processing. Gephi was used to perform social network analysis based on the extracted data.</p>
+<p>In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships. We only considered for this analysis tweets in english.<br />
+In average there are 1103 tweets per day in the data, but we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the “USA and China Trade war”. You can see more details about this in <code>User Cluster</code> article.</p>
+<pre class="r"><code>time=tweet %&gt;% mutate(day = as.Date(cut(created_at, breaks = &quot;day&quot;))) %&gt;%
+      group_by(day) %&gt;% 
+      summarise(total = n()) 
 
+time_aux &lt;- tibble::tibble(
+      time = seq(as.Date(&quot;2018-12-10&quot;), as.Date(&quot;2019-01-02&quot;), by = &quot;day&quot;))
+time &lt;- left_join(time_aux, time, by = c(&quot;time&quot; = &quot;day&quot;))
 
-HUGOMORE42
+plot_ly(time, x = ~time, y = ~total, mode = &#39;lines&#39;, line = list(color = &#39;rgb(0, 0, 102)&#39;, width = 3)) %&gt;%
+      add_lines() %&gt;%
+      layout(title=&quot;Tweets per day&quot;) %&gt;%
+      rangeslider(time_aux$time[1], time_aux$time[5])</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"c8f91901366d":["function () ","plotlyVisDat"]},"cur_data":"c8f91901366d","attrs":{"c8f91901366d":{"x":{},"y":{},"mode":"lines","line":{"color":"rgb(0, 0, 102)","width":3},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"range":[1544400000000,1544745600000],"rangeslider":{"visible":true},"title":"time"},"title":"Tweets per day","yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":[{"name":"Collaborate","icon":{"width":1000,"ascent":500,"descent":-50,"path":"M487 375c7-10 9-23 5-36l-79-259c-3-12-11-23-22-31-11-8-22-12-35-12l-263 0c-15 0-29 5-43 15-13 10-23 23-28 37-5 13-5 25-1 37 0 0 0 3 1 7 1 5 1 8 1 11 0 2 0 4-1 6 0 3-1 5-1 6 1 2 2 4 3 6 1 2 2 4 4 6 2 3 4 5 5 7 5 7 9 16 13 26 4 10 7 19 9 26 0 2 0 5 0 9-1 4-1 6 0 8 0 2 2 5 4 8 3 3 5 5 5 7 4 6 8 15 12 26 4 11 7 19 7 26 1 1 0 4 0 9-1 4-1 7 0 8 1 2 3 5 6 8 4 4 6 6 6 7 4 5 8 13 13 24 4 11 7 20 7 28 1 1 0 4 0 7-1 3-1 6-1 7 0 2 1 4 3 6 1 1 3 4 5 6 2 3 3 5 5 6 1 2 3 5 4 9 2 3 3 7 5 10 1 3 2 6 4 10 2 4 4 7 6 9 2 3 4 5 7 7 3 2 7 3 11 3 3 0 8 0 13-1l0-1c7 2 12 2 14 2l218 0c14 0 25-5 32-16 8-10 10-23 6-37l-79-259c-7-22-13-37-20-43-7-7-19-10-37-10l-248 0c-5 0-9-2-11-5-2-3-2-7 0-12 4-13 18-20 41-20l264 0c5 0 10 2 16 5 5 3 8 6 10 11l85 282c2 5 2 10 2 17 7-3 13-7 17-13z m-304 0c-1-3-1-5 0-7 1-1 3-2 6-2l174 0c2 0 4 1 7 2 2 2 4 4 5 7l6 18c0 3 0 5-1 7-1 1-3 2-6 2l-173 0c-3 0-5-1-8-2-2-2-4-4-4-7z m-24-73c-1-3-1-5 0-7 2-2 3-2 6-2l174 0c2 0 5 0 7 2 3 2 4 4 5 7l6 18c1 2 0 5-1 6-1 2-3 3-5 3l-174 0c-3 0-5-1-7-3-3-1-4-4-5-6z"},"click":"function(gd) { \n        // is this being viewed in RStudio?\n        if (location.search == '?viewer_pane=1') {\n          alert('To learn about plotly for collaboration, visit:\\n https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html');\n        } else {\n          window.open('https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html', '_blank');\n        }\n      }"}],"cloud":false},"data":[{"x":["2018-12-10","2018-12-11","2018-12-12","2018-12-13","2018-12-14","2018-12-15","2018-12-16","2018-12-17","2018-12-18","2018-12-19","2018-12-20","2018-12-21","2018-12-22","2018-12-23","2018-12-24","2018-12-25","2018-12-26","2018-12-27","2018-12-28","2018-12-29","2018-12-30","2018-12-31","2019-01-01"],"y":[1310,1425,1268,1102,1247,1011,794,1464,1970,1233,1129,1015,931,733,850,832,1191,1299,1220,796,652,1158,742],"mode":"lines","line":{"color":"rgb(0, 0, 102)","width":3},"type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"base_url":"https://plot.ly"},"evals":["config.modeBarButtonsToAdd.0.click"],"jsHooks":[]}</script>
+</div>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+</div>
+<div id="topic-modelling" class="section level1">
+<h1>Topic Modelling</h1>
+<p>Analysing the Word Cloud, we clearly see some topics that were quite popular during the time of our analysis, like: “Trade War”, “Huawei”, “Xi” (Xi Jinping) and others.</p>
+<pre class="r"><code>aux &lt;- tweet %&gt;% select(status_id, text, created_at)
+aux$stripped_text &lt;- gsub(&quot;http.*&quot;,&quot;&quot;,  aux$text)
+aux$stripped_text &lt;- gsub(&quot;https.*&quot;,&quot;&quot;, aux$stripped_text)
+aux$stripped_text &lt;- gsub(&#39;[^\x20-\x7E]&#39;, &#39;&#39;, aux$stripped_text)
 
+words &lt;- aux %&gt;%
+  unnest_tokens(word, stripped_text) %&gt;%
+  anti_join(stop_words)
+
+words %&gt;% 
+      filter(word != &quot;scmpnews&quot;) %&gt;%
+      count(word) %&gt;%
+      with(wordcloud(word, n, max.words = 120, rot.per = 0.4, scale=c(4,0.6),
+      colors=brewer.pal(7, &quot;Set1&quot;)))</code></pre>
+<p><img src="/post/2019-02-11-scmp-social-network-analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>As the SCMP network is huge with a lot of activities in different context, we decided to study its strategy per topic or the content of the tweet. With this said, to achieve this goal we used some Natural Language Process algorithms to access these topics and find groups of common content. We decided to use LDA (Latent … Algorithm) to this analysis and we found 6 different groups in our data:<br />
+- “USA and China”: News related to USA and China relationship. With special attention to the Trade war issue that was quite discussed in this period and that’s the reason why these words are bigger than the others.] - “International”: News related to the international scene. In this part of the cloud we can se the name of some countries like “Canada”, “Japan” and “India”. In this topic the principal news is related to the arrestment of Huawei’s owner daughter in Canada. - “Hong Kong News”: In this topic we have many different topic news but all of them happening or having relationship in Hong Kong. - “Mainland China”: News inside the Mainland China. Some of the popular news in this topic is the ones about the group of Christians that were arrested during this period. - “Sports”: In this case the news that generated most engagement was the one related to some rumors of Japan Olympic games boycott because of the new Japanese police to Whale Hunting. - “Business”: General news about business. In this cloud we can see some terms like: “Jack Ma”, “CEOs”, “wrapping” and “Christmas”.</p>
+<pre class="r"><code>aux &lt;- tweet %&gt;% select(status_id, text, created_at, topic)
+aux$stripped_text &lt;- gsub(&quot;http.*&quot;,&quot;&quot;,  aux$text)
+aux$stripped_text &lt;- gsub(&quot;https.*&quot;,&quot;&quot;, aux$stripped_text)
+aux$stripped_text &lt;- gsub(&#39;[^\x20-\x7E]&#39;, &#39;&#39;, aux$stripped_text)
+
+topic1 &lt;- aux %&gt;% filter(topic==1) %&gt;% select(stripped_text)
+topic1a = paste(topic1$stripped_text, collapse=&quot; &quot;)
+
+topic2 &lt;- aux %&gt;% filter(topic==2) %&gt;% select(stripped_text)
+topic2a = paste(topic2$stripped_text, collapse=&quot; &quot;)
+
+topic3 &lt;- aux %&gt;% filter(topic==3) %&gt;% select(stripped_text)
+topic3a = paste(topic3$stripped_text, collapse=&quot; &quot;)
+
+topic4 &lt;- aux %&gt;% filter(topic==4) %&gt;% select(stripped_text)
+topic4a = paste(topic4$stripped_text, collapse=&quot; &quot;)
+
+topic5 &lt;- aux %&gt;% filter(topic==5) %&gt;% select(stripped_text)
+topic5a = paste(topic5$stripped_text, collapse=&quot; &quot;)
+
+topic6 &lt;- aux %&gt;% filter(topic==6) %&gt;% select(stripped_text)
+topic6a = paste(topic6$stripped_text, collapse=&quot; &quot;)
+
+all = c(topic1a, topic2a, topic3a, topic4a, topic5a, topic6a)
+all = removeWords(all, c(stopwords(&quot;english&quot;)))
+
+corpus = Corpus(VectorSource(all))
+tdm = TermDocumentMatrix(corpus)
+tdm2 &lt;- removeSparseTerms(tdm, 0.7)
+# convert as matrix
+tdm = as.matrix(tdm)
+
+# add column names
+colnames(tdm) = c(&quot;HK News&quot;, &quot;International&quot;, &quot;USA and China&quot;, &quot;Business&quot;, &quot;Sports&quot;, &quot;Mainland China&quot;)
+                  #,  &quot;topic7&quot;, &quot;topic8&quot;,  &quot;topic9&quot;)
+
+comparison.cloud(tdm, random.order=FALSE,scale=c(4,0.4), 
+colors = c(&quot;midnightblue&quot;, &quot;darkgoldenrod1&quot;, &quot;goldenrod4&quot;, &quot;dodgerblue3&quot;, &quot;gray44&quot;,  &quot;darkorange3&quot;),
+title.size=0.8,
+max.words=5000) </code></pre>
+<p><img src="/post/2019-02-11-scmp-social-network-analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="user-cluster" class="section level1">
+<h1>User Cluster</h1>
+<p>To help understand the behavior of each group of users inside the sub topic networks, we also developed a user clustering to understand the different kind of users in our data and how they interact with the different topics. For this task we used a K-mean algorithm, with 9 groups.</p>
+<p><img src="C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/cluster.png" width="90%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="sentiment-analysis" class="section level1">
+<h1>Sentiment Analysis</h1>
+<p>Another interesting topic in social media is Sentiment Analysis and specially in the context of news this analysis helps understand how users react to each topic. It can also help to understand how the opinion is spread along the relationships trough the network. As we can see from the cloud bellow, some words like: “american”, “propaganda”, “trade”, “war” and “China” are very frequent in posts classified as negative. While words like: “Jack Ma”, “founder”, “CEOs” and “bravo” are frequent in positive posts.</p>
+<p><img src="/post/2019-02-11-scmp-social-network-analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="social-network-graphs" class="section level1">
+<h1>Social Network Graphs</h1>
+<p>After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks as shown in the following image:</p>
+<p><img src="C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/networks.png" width="90%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+</div>
+<div id="recommendations" class="section level1">
+<h1>Recommendations</h1>
+</div>
 
               
             </div>
@@ -518,7 +644,7 @@ HUGOMORE42
                   Feb 2, 2019
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather">HUGOMORE42</div>
+              <div class="media-content hide-xs font-merryweather">Introduction In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to understand how the Twitter Users on SCMP’s account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.</div>
             </div>
             <div style="clear:both;"></div>
             <hr>
