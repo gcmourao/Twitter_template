@@ -56,26 +56,21 @@ For our analysis, we had the option of choosing one of several software;
 
 NodeXL had the capability of handling most of the social network analysis we wanted to do. However, due to its limitations as an Excel plug-in in handling large amounts of data, we focused on using R for data extraction, time-series, topic modeling, natural language processing and cluster analysis. Python was used for data wrangling, and sentiment analysis under natural language processing. Gephi was used to perform social network analysis based on the extracted data.
 
-# Exploratory Data Analysis
-
 
 ```{r, include=FALSE}
 library(tidyverse)
 library(dplyr)
 library(tidytext) # for text mining
-#library(tidyr)
 library(tm) # for text mining
-#library(SnowballC) # for text stemming
 
 library(ggplot2)
-#library(ggExtra)
 library(plotly)
 library(wordcloud) # word-cloud generator
 library(igraph)
 library(ggraph)
 library(RColorBrewer)
 library(ggpubr)
-knitr::opts_knit$set(root.dir = "/Users/Mawuli/Documents/GitHub/Twitter_template")
+knitr::opts_knit$set(root.dir = "/Users/gabriela.mourao/Documents/Twitter_template")
 #library(gridExtra)
 
 #library(topicmodels)
@@ -84,7 +79,7 @@ knitr::opts_knit$set(root.dir = "/Users/Mawuli/Documents/GitHub/Twitter_template
 ```
 
 ```{r, include = FALSE}
-setwd("/Users/Mawuli/Documents/GitHub/Twitter_template")
+setwd("C:/Users/gabriela.mourao/Documents/Twitter_template")
 tweet <- read.csv("SCMPNews_tweet_data_full_new.csv")
 tweet$created_at <- as.POSIXct(as.character(levels(tweet$created_at)), format = "%Y-%m-%d %H:%M")[tweet$created_at]
 vertice <- read.csv("SCMPNews_vertices_data_full_new.csv")
@@ -103,8 +98,8 @@ theme_SCMP <- theme_classic() +
               axis.text.y = element_text(colour = "gray48"),
               axis.text.x = element_text(colour = "gray48"))
 ```
-In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships. We only condidered for this analysis tweets in english.   
-In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". We will show this in details later on.
+In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships. We only considered for this analysis tweets in english.   
+In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in `User Cluster` article.
 
 
 ```{r}
@@ -116,108 +111,16 @@ time_aux <- tibble::tibble(
       time = seq(as.Date("2018-12-10"), as.Date("2019-01-02"), by = "day"))
 time <- left_join(time_aux, time, by = c("time" = "day"))
 
-plot_ly(time, x = ~time, y = ~total) %>%
+plot_ly(time, x = ~time, y = ~total, mode = 'lines', line = list(color = 'rgb(0, 0, 102)', width = 3)) %>%
       add_lines() %>%
       layout(title="Tweets per day") %>%
       rangeslider(time_aux$time[1], time_aux$time[5])
 ```
 
-This data is characterized by some few users that have a very high level of activity and the others (the majority) with just sporadic activity. These outliers are in general company accounts (like South China Morning Post, obviously) and some famous people that advocates for some causes or are interested in spread certain type of information.
-
-
-```{r, message = FALSE, warning=FALSE}
-vertice2 <- vertice %>% mutate(account_lang_en = ifelse(account_lang=="en","english","others"))
-
-p <- plot_ly(vertice2, 
-             x = ~followers_count, 
-             y = ~friends_count, 
-             z = ~statuses_count,
-             color = ~account_lang_en,
-             colors = c('#00004d', '#e6b800'),
-             text = ~paste('#Followers',followers_count,'<br>#Friends:',friends_count,'<br>#Statuses:',statuses_count)) %>%
-             layout(title = 'Followers vs Friends vs Statuses',
-                    scene = 
-                          list(xaxis = 
-                                     list(title = 'Followers',
-                                          gridcolor = 'rgb(230, 230, 230)',
-                                          zerolinewidth = 1,
-                                          ticklen = 5,
-                                          gridwidth = 2),
-                               yaxis =
-                                     list(title = 'Friends',
-                                          gridcolor = 'rgb(230, 230, 230)',
-                                          zerolinewidth = 1,
-                                          ticklen = 5,
-                                          gridwith = 2),
-                               zaxis = 
-                                     list(title = 'Statuses',
-                                          gridcolor = 'rgb(230, 230, 230)',
-                                          zerolinewidth = 1,
-                                          ticklen = 5,
-                                          gridwith = 2)),
-                    annotations = 
-                          list(x = 1.13,
-                               y = 1.05,
-                               text = 'Account Language',
-                               showarrow = FALSE),      
-                    paper_bgcolor = 'rgb(255, 255, 255)',
-                    plot_bgcolor = 'rgb(255, 255, 255)') 
-
-p
-
-```
-
-Besides that, we see that SCMP has a different behavior when we compare it with other users. For example, most of their activity ("from") are classified as "tweet" in the edge data, while other users have "mention" as principal activity. It happens because most of their activities are indeed related to posting the link of their news together with some comments about it. On the other hand, when we analyze the relationship "to" SCMP (it means other users interacting with SCMP), we see that the most frequent is "retweet", while the same analysis with "other users" has, again, mention as principal category.  
-Finally, we see a lack of hashtag usage in SCMP network. This is related to the fact that SCMP itself doesn't use much of this strategy in their tweets and, because most of time people are retweeting their posts, this behavior is amplified in the network.
-
-
-```{r, warning=FALSE}
-
-p0 <- tweet %>% 
-          mutate(n_hashtag = case_when( hashtag_count == 0 ~ "a. 0"
-                                       ,hashtag_count == 1 ~ "b. 1"
-                                       ,hashtag_count == 2 ~ "c. 2"
-                                       ,hashtag_count == 3 ~ "d .3"
-                                       ,hashtag_count >= 4 ~ "e. >3")) %>%
-          ggplot(aes(x= as.factor(n_hashtag), fill=as.factor(n_hashtag))) + 
-          geom_bar() + 
-          geom_text(aes(label=..count..),stat="count", size = 3.5, position = position_dodge(0.7), vjust = 1, colour = "gray60") +
-          scale_fill_manual(values = c("midnightblue", "dodgerblue3","slategray3", "darkgoldenrod1", "lightgoldenrod1")) +
-          labs(title = 'Hashtags per tweet', x = 'Number of Tweets') + 
-          theme_SCMP
-p0 <- p0 + theme(legend.position = "none")
-p0 <- p0 + theme(plot.title = element_text(size = 11, family = "sans", color = "midnightblue", hjust = 0.5))
+# Overview
 
 
 
-teste_scmp <- edge %>% mutate(flag_scmp1 = ifelse(vertice1 == "SCMPNews","1.SCMP","2.Others"),
-                                        flag_scmp2 = ifelse(vertice2 == "SCMPNews","1.SCMP","2.Others"))
-p1 <- ggplot(teste_scmp, aes(x= relationship)) + 
-      geom_bar(aes(fill=as.factor(flag_scmp1)),position = "dodge") + 
-      scale_fill_manual(values = c("darkgoldenrod1", "midnightblue")) +
-      labs(title = 'From Node - Relationship Analysis', x = '', y = "") + 
-      theme_SCMP
-p1<- p1 + theme(legend.title=element_blank())
-p1 <- p1 + theme(plot.title = element_text(size = 11, family = "sans", color = "midnightblue", hjust = 0.5))
-
-
-p2 <- ggplot(teste_scmp, aes(x= relationship)) + 
-      geom_bar(aes(fill=as.factor(flag_scmp2)),position = "dodge") + 
-      scale_fill_manual(values = c("darkgoldenrod1", "midnightblue")) +
-      labs(title = 'To Node - Relationship Analysis', x = '', y = "") +
-      theme_SCMP
-p2 <- p2 + theme(legend.title=element_blank())
-p2 <- p2 + theme(plot.title = element_text(size = 11, family = "sans", color = "midnightblue", hjust = 0.5))
-
-
-p3 <- ggplot(teste_scmp, aes(x= relationship)) + 
-      geom_bar(fill="midnightblue") +
-      labs(title = 'Relationship Analysis', x = ' ', y="") + 
-      theme_SCMP
-p3 <- p3 + theme(plot.title = element_text(size = 11, family = "sans", color = "midnightblue", hjust = 0.5))
-
-ggarrange(p0, p1, p2, p3, nrow=2, ncol=2, common.legend = FALSE)
-```
 
 # Topic Modelling
 
