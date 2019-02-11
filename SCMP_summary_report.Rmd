@@ -32,15 +32,28 @@ a:visited {
 
 # Introduction
 
-In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.
+The online newspaper sector is one of the most vulnerable to drastic changes especially due to the emergence of new online services and strategies. The challenges are growing , not only in terms of technology developments and distribution channels, but also due the presence of new competitors: social networks. Physical sales are decreasing and new online and social strategies are needed to attract an audience online and to increase ad revenue.    
+Now, in order to have a good performance in terms of profit and engagement it's necessary to be active on many platforms. We decided to analyse the South China Morning Post due to their particular position which covers printed newspapers, an active Facebook presence, Instagram and Twitter account. Even though the newspapers sector is now facing many challenges, this journal is one of the most competitive in the world.  
+The South China Morning Post was established in Hong Kong in 1903 by Tse Tsan-Tai and Alfred Cunningham and published its first newspaper in English on November 6th 1900. 115 years later it is one of the most important news portal in Hong Kong and was acquired by Alibaba in 2015. It set out to be a global media company that reports mainly about Hong Kong and mainland China to an international audience.  
+SCMP produces content that covers multiple topics such as business, technology, and lifestyle. In order to achieve its mission of becoming the bridge of communication between Asia and the world,  SCMP went through a series of transformations in 2018 that has allowed them to reach a broader audience.   
+In this project we analyzed the Twitter data from SCMP aiming to understand its Social Media Network. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities on how SCMP can capitalize on its social media strategy. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.    
+This article is divide in the following sections:
+- Data Extraction and Transformation   
+- Tools   
+- Overview   
+- The alternative approach   
+- Social Network graphs  
+- Conclusion   
+- Recomendation   
+- Resources   
 
 # Data Extraction and Transformation 
 
 To extract the data from Twitter, we used the package `rtweet` using the search term "SCMPNews". The data was extract three times during the period from Dec/18 and Jan/19:  
 - First Extraction: 18th - December - 2018  
-- Second Extraction: 25th - December - 2018  
-- Third Extraction: 1st - January - 2019
-
+- Second Extraction: 25th - December - 2018   
+- Third Extraction: 1st - January - 2019   
+   
 The resulting data was merged, and duplicated tweets were excluded. Besides that, from the original data extracted, the team broke it down into three different component files that was used in the further analysis:  
 - Vertex data: File with information about the user account like number of friends, number of tweets, account language and others.  
 - Edge data: File with user's relationship trough tweets, like: retweet, reply, mention and others.  
@@ -60,19 +73,16 @@ NodeXL had the capability of handling most of the social network analysis we wan
 ```{r, include=FALSE}
 library(tidyverse)
 library(dplyr)
-library(tidytext) # for text mining
-library(tm) # for text mining
-
+library(tidytext) 
+library(tm) 
 library(ggplot2)
 library(plotly)
-library(wordcloud) # word-cloud generator
+library(wordcloud) 
 library(igraph)
 library(ggraph)
 library(RColorBrewer)
 library(ggpubr)
-knitr::opts_knit$set(root.dir = "/Users/gabriela.mourao/Documents/Twitter_template")
 #library(gridExtra)
-
 #library(topicmodels)
 #library(rtweet)
 #library(cluster)
@@ -98,11 +108,13 @@ theme_SCMP <- theme_classic() +
               axis.text.y = element_text(colour = "gray48"),
               axis.text.x = element_text(colour = "gray48"))
 ```
-In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships. We only considered for this analysis tweets in english.   
-In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in `User Cluster` article.
+    
+In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships (We only considered for this analysis tweets in english) 
+In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in `Topic Cluster` and `User cluster` article.
 
 
 ```{r}
+#preparing the data for the visualization: number of tweets per day
 time=tweet %>% mutate(day = as.Date(cut(created_at, breaks = "day"))) %>%
       group_by(day) %>% 
       summarise(total = n()) 
@@ -111,6 +123,7 @@ time_aux <- tibble::tibble(
       time = seq(as.Date("2018-12-10"), as.Date("2019-01-02"), by = "day"))
 time <- left_join(time_aux, time, by = c("time" = "day"))
 
+#using plotly package for a dynamic visualization
 plot_ly(time, x = ~time, y = ~total, mode = 'lines', line = list(color = 'rgb(0, 0, 102)', width = 3)) %>%
       add_lines() %>%
       layout(title="Tweets per day") %>%
@@ -119,51 +132,41 @@ plot_ly(time, x = ~time, y = ~total, mode = 'lines', line = list(color = 'rgb(0,
 
 # Overview
 
-In this context, we know that SCMP is the primary source of content. So, it is reasonable to expect that its social network would be built around its profile. But, what we could see from its graph is that the power of its profile is so high that is hard to identify relevant sub-networks in its structure. 
+In this context, we know that SCMP is the primary source of content. So, it is reasonable to expect that its social network would be built around its profile. But, what we could see from its graph is that the power of this account is so high that is hard to identify relevant sub-networks in its structure. 
 
 When we compare the betweenness centrality from the top users, we see that the difference between SCMP (top 1) and the other ones is huge. Note that this metric is normalized to make easier the comparison.
+
 |User*|Betweenness Centrality|
 |:---:|:---:|
 |Top 1|0.99|
 |Top 2|0.01|
-|Top 3|0.01 |
+|Top 3|0.01|
 |Top 4|0.01|
 |Top 5|0.01|
-According to Borgatti et all., "Betweenness centrality (Freeman 1979) is a measure of how often a given node falls along the shortest path between two other nodes." So, it means that SCMP profile is "in the middle" of the majority conversations and that's why is so hard to find sub-communities in this network.
-We were able to find 21 different communities in this network, but none of them are huge enough comparing to the giant component in dark blue. The most important ones are in blue, red, black and green. All the other small ones are in gray.
 
+SCMP profile is "in the middle" of the majority conversations (i.e edges) and that's why is so hard to find sub-communities in this network, since most of the relationships are directly related to SCMP.
+After running the modularity clustering available in Gephi, we were able to find 21 different communities. The most important ones are highlighted in dark blue, yellow, light blue, red, black, green and all the other (small) ones are in gray. As one can notice, comparing to the giant component in dark blue where SCMP node is in, none of others sub-networks have high relevance.   
 
-*Even if the data that we collected is public, we decided to anonymize the user's names.
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
 knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/overview.png')
 ```
 
+# The Alternative Approach
 
+To come up with more insightful analysis we decided to user an alternative approach by combining topic clustering, user clustering and sentiment analysis to split this giant network into more meaningful sub-networks.
+If you understand more deeply those analysis you can go through the following articles: ``, ``, ``.
 
-# Topic Modelling
+## Topic Modelling
 
-Analysing the Word Cloud, we clearly see some topics that were quite popular during the time of our analysis, like: "Trade War", "Huawei", "Xi" (Xi Jinping) and others.
+As a huge media company, SCMP is always producing content from a variety of subjects. As we can see from their web site, they even classify it as:
 
-```{r, message=FALSE}
-aux <- tweet %>% select(status_id, text, created_at)
-aux$stripped_text <- gsub("http.*","",  aux$text)
-aux$stripped_text <- gsub("https.*","", aux$stripped_text)
-aux$stripped_text <- gsub('[^\x20-\x7E]', '', aux$stripped_text)
-
-words <- aux %>%
-  unnest_tokens(word, stripped_text) %>%
-  anti_join(stop_words)
-
-words %>% 
-      filter(word != "scmpnews") %>%
-      count(word) %>%
-      with(wordcloud(word, n, max.words = 120, rot.per = 0.4, scale=c(4,0.6),
-      colors=brewer.pal(7, "Set1")))
-
+```{r}
+#image
 ```
 
-As the SCMP network is huge with a lot of activities in different context, we decided to study its strategy per topic or the content of the tweet. With this said, to achieve this goal we used some Natural Language Process algorithms to access these topics and find groups of common content. 
+With this said, we decided to identify the natural topics that were commented in SCMP network. Notice that we are considering not only SCMP posts but also all the other users' tweets. So, the analysis is broader then the content that SCMP produces alone, since it considers the engagement to the topics spread through its network.
+To achieve this goal, we used some Natural Language Process algorithms to access these topics and find groups of common content. 
 We decided to use LDA (Latent ... Algorithm) to this analysis and we found 6 different groups in our data:  
 - "USA and China": News related to USA and China relationship. With special attention to the Trade war issue that was quite discussed in this period and that's the reason why these words are bigger than the others.]
 - "International": News related to the international scene. In this part of the cloud we can se the name of some countries like "Canada", "Japan" and "India". In this topic the principal news is related to the arrestment of Huawei's owner daughter in Canada.
@@ -172,9 +175,14 @@ We decided to use LDA (Latent ... Algorithm) to this analysis and we found 6 dif
 - "Sports": In this case the news that generated most engagement was the one related to some rumors of Japan Olympic games boycott because of the new Japanese police to Whale Hunting.
 - "Business": General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".
  
+Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably they reach a very specific kind of user that comparing to the whole network doesn't play a very important role.
+
 
 ```{r, message = FALSE, warning=FALSE}
+#selecting the important variables. The topic variable was obtained using the *** function. More details about this modeling part are found in Topic Modelling article. 
 aux <- tweet %>% select(status_id, text, created_at, topic)
+
+#cleaning the tweet text
 aux$stripped_text <- gsub("http.*","",  aux$text)
 aux$stripped_text <- gsub("https.*","", aux$stripped_text)
 aux$stripped_text <- gsub('[^\x20-\x7E]', '', aux$stripped_text)
@@ -200,33 +208,38 @@ topic6a = paste(topic6$stripped_text, collapse=" ")
 all = c(topic1a, topic2a, topic3a, topic4a, topic5a, topic6a)
 all = removeWords(all, c(stopwords("english")))
 
+#generating tdm matrix for the visualization
 corpus = Corpus(VectorSource(all))
 tdm = TermDocumentMatrix(corpus)
 tdm2 <- removeSparseTerms(tdm, 0.7)
-# convert as matrix
-tdm = as.matrix(tdm)
+tdm2 = as.matrix(tdm2)
 
 # add column names
-colnames(tdm) = c("HK News", "International", "USA and China", "Business", "Sports", "Mainland China")
-                  #,  "topic7", "topic8",  "topic9")
+colnames(tdm2) = c("HK News", "International", "USA and China", "Business", "Sports", "Mainland China")
 
-comparison.cloud(tdm, random.order=FALSE,scale=c(4,0.4), 
+comparison.cloud(tdm2, random.order=FALSE,scale=c(4,0.4), 
 colors = c("midnightblue", "darkgoldenrod1", "goldenrod4", "dodgerblue3", "gray44",  "darkorange3"),
 title.size=0.8,
 max.words=5000) 
 ```
 
-# User Cluster
+## User Cluster
 
-To help understand the behavior of each group of users inside the sub topic networks, we also developed a user clustering to understand the different kind of users in our data and how they interact with the different topics. For this task we used a K-mean algorithm, with 9 groups.
+We also developed a user clustering to understand the different kind of users in our data and how they interact with the different topics. For this task we used a K-mean algorithm, with 9 groups.
+The variables used in this model are:
+-
+-
+-
+-
+
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
 knitr::include_graphics('C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/cluster.png')
 ```
 
-# Sentiment Analysis
+## Sentiment Analysis
 
-Another interesting topic in social media is Sentiment Analysis and specially in the context of news this analysis helps understand how users react to each topic. It can also help to understand how the opinion is spread along the relationships trough the network. 
+Another interesting topic in social media is Sentiment Analysis and specially in the context of news this analysis helps understand how users react to each topic. It can also help to understand how the opinion is spread along the relationships trough the network. But even more interestingly is the agreement analysis.....
 As we can see from the cloud bellow, some words like: "american", "propaganda", "trade", "war" and "China" are very frequent in posts classified as negative. While words like: "Jack Ma", "founder", "CEOs" and "bravo" are frequent in positive posts.
 
 
@@ -261,19 +274,24 @@ all = removeWords(all, c(stopwords("english")))
 corpus = Corpus(VectorSource(all))
 tdm = TermDocumentMatrix(corpus)
 tdm2 <- removeSparseTerms(tdm, 0.6)    
-# convert as matrix
-tdm = as.matrix(tdm)
+tdm2 = as.matrix(tdm2)
 
 # add column names
-colnames(tdm) = c("Negative", "Neutral", "Positive")
-                  #,  "topic7", "topic8",  "topic9")
+colnames(tdm2) = c("Negative", "Neutral", "Positive")
 
-comparison.cloud(tdm, random.order=FALSE,scale=c(3,0.4), 
+comparison.cloud(tdm2, random.order=FALSE,scale=c(3,0.4), 
 colors = c("brown2", "gray44", "midnightblue"),
 title.size=0.8,
 max.words=5000)
 
 ```
+
+some agreement visualization
+
+```{r}
+
+```
+
 
 # Social Network Graphs
  
