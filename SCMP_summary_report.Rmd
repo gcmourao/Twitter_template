@@ -70,6 +70,7 @@ library(igraph)
 library(ggraph)
 library(RColorBrewer)
 library(ggpubr)
+knitr::opts_knit$set(root.dir = "/Users/gabriela.mourao/Documents/Twitter_template")
 #library(gridExtra)
 
 #library(topicmodels)
