@@ -1,0 +1,250 @@
+---
+title: SCMP Social Network Analysis
+author: Mawuli and Gabriella
+date: '2019-02-11'
+slug: scmp-social-network-analysis
+categories:
+  - Social Network Analysis
+tags:
+  - Social Network Analysis
+keywords:
+  - tech
+---
+
+# Introduction
+
+In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.
+
+# Data Extraction and Transformation 
+
+To extract the data from Twitter, we used the package `rtweet` using the search term "SCMPNews". The data was extract three times during the period from Dec/18 and Jan/19:  
+- First Extraction: 18th - December - 2018  
+- Second Extraction: 25th - December - 2018  
+- Third Extraction: 1st - January - 2019
+
+The resulting data was merged, and duplicated tweets were excluded. Besides that, from the original data extracted, the team broke it down into three different component files that was used in the further analysis:  
+- Vertex data: File with information about the user account like number of friends, number of tweets, account language and others.  
+- Edge data: File with user's relationship trough tweets, like: retweet, reply, mention and others.  
+- Tweet Data: Is the original file extract using the Twitter API.
+
+# Tools
+
+For our analysis, we had the option of choosing one of several software;
+- R
+- NodeXL
+- Gephi
+- Python
+
+NodeXL had the capability of handling most of the social network analysis we wanted to do. However, due to its limitations as an Excel plug-in in handling large amounts of data, we focused on using R for data extraction, time-series, topic modeling, natural language processing and cluster analysis. Python was used for data wrangling, and sentiment analysis under natural language processing. Gephi was used to perform social network analysis based on the extracted data.
+
+
+```{r, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(tidytext) # for text mining
+library(tm) # for text mining
+
+library(ggplot2)
+library(plotly)
+library(wordcloud) # word-cloud generator
+library(igraph)
+library(ggraph)
+library(RColorBrewer)
+library(ggpubr)
+knitr::opts_knit$set(root.dir = "/Users/Mawuli/Documents/GitHub/Twitter_template")
+#library(gridExtra)
+
+#library(topicmodels)
+#library(rtweet)
+#library(cluster)
+```
+
+```{r, include = FALSE}
+setwd("/Users/Mawuli/Documents/GitHub/Twitter_template")
+tweet <- read.csv("SCMPNews_tweet_data_full_new.csv")
+tweet$created_at <- as.POSIXct(as.character(levels(tweet$created_at)), format = "%Y-%m-%d %H:%M")[tweet$created_at]
+vertice <- read.csv("SCMPNews_vertices_data_full_new.csv")
+edge <- read.csv("SCMPNews_edge_data_full_new.csv")
+edge$date_created <- as.POSIXct(as.character(levels(edge$date_created)), format = "%d/%m/%Y %H:%M")[edge$date_created]
+```
+
+```{r, include = FALSE}
+#As we said earlier our three files are going to be used in this analysis. It is important to remember that even if we only have public data in this file, we decided to anonimize all the data. Sensitive information as screen name were deleted.
+glimpse(tweet)
+glimpse(vertice)
+glimpse(edge)
+
+theme_SCMP <- theme_classic() +
+              theme(text=element_text(size = 11, family = "sans", color = "midnightblue"),
+              axis.text.y = element_text(colour = "gray48"),
+              axis.text.x = element_text(colour = "gray48"))
+```
+In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships. We only considered for this analysis tweets in english.   
+In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in `User Cluster` article.
+
+
+```{r}
+time=tweet %>% mutate(day = as.Date(cut(created_at, breaks = "day"))) %>%
+      group_by(day) %>% 
+      summarise(total = n()) 
+
+time_aux <- tibble::tibble(
+      time = seq(as.Date("2018-12-10"), as.Date("2019-01-02"), by = "day"))
+time <- left_join(time_aux, time, by = c("time" = "day"))
+
+plot_ly(time, x = ~time, y = ~total, mode = 'lines', line = list(color = 'rgb(0, 0, 102)', width = 3)) %>%
+      add_lines() %>%
+      layout(title="Tweets per day") %>%
+      rangeslider(time_aux$time[1], time_aux$time[5])
+```
+
+# Overview
+
+
+
+
+# Topic Modelling
+
+Analysing the Word Cloud, we clearly see some topics that were quite popular during the time of our analysis, like: "Trade War", "Huawei", "Xi" (Xi Jinping) and others.
+
+```{r, message=FALSE}
+aux <- tweet %>% select(status_id, text, created_at)
+aux$stripped_text <- gsub("http.*","",  aux$text)
+aux$stripped_text <- gsub("https.*","", aux$stripped_text)
+aux$stripped_text <- gsub('[^\x20-\x7E]', '', aux$stripped_text)
+
+words <- aux %>%
+  unnest_tokens(word, stripped_text) %>%
+  anti_join(stop_words)
+
+words %>% 
+      filter(word != "scmpnews") %>%
+      count(word) %>%
+      with(wordcloud(word, n, max.words = 120, rot.per = 0.4, scale=c(4,0.6),
+      colors=brewer.pal(7, "Set1")))
+
+```
+
+As the SCMP network is huge with a lot of activities in different context, we decided to study its strategy per topic or the content of the tweet. With this said, to achieve this goal we used some Natural Language Process algorithms to access these topics and find groups of common content. 
+We decided to use LDA (Latent ... Algorithm) to this analysis and we found 6 different groups in our data:  
+- "USA and China": News related to USA and China relationship. With special attention to the Trade war issue that was quite discussed in this period and that's the reason why these words are bigger than the others.]
+- "International": News related to the international scene. In this part of the cloud we can se the name of some countries like "Canada", "Japan" and "India". In this topic the principal news is related to the arrestment of Huawei's owner daughter in Canada.
+- "Hong Kong News": In this topic we have many different topic news but all of them happening or having relationship in Hong Kong.
+- "Mainland China": News inside the Mainland China. Some of the popular news in this topic is the ones about the group of Christians that were arrested during this period.
+- "Sports": In this case the news that generated most engagement was the one related to some rumors of Japan Olympic games boycott because of the new Japanese police to Whale Hunting.
+- "Business": General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".
+ 
+
+```{r, message = FALSE, warning=FALSE}
+aux <- tweet %>% select(status_id, text, created_at, topic)
+aux$stripped_text <- gsub("http.*","",  aux$text)
+aux$stripped_text <- gsub("https.*","", aux$stripped_text)
+aux$stripped_text <- gsub('[^\x20-\x7E]', '', aux$stripped_text)
+
+topic1 <- aux %>% filter(topic==1) %>% select(stripped_text)
+topic1a = paste(topic1$stripped_text, collapse=" ")
+
+topic2 <- aux %>% filter(topic==2) %>% select(stripped_text)
+topic2a = paste(topic2$stripped_text, collapse=" ")
+
+topic3 <- aux %>% filter(topic==3) %>% select(stripped_text)
+topic3a = paste(topic3$stripped_text, collapse=" ")
+
+topic4 <- aux %>% filter(topic==4) %>% select(stripped_text)
+topic4a = paste(topic4$stripped_text, collapse=" ")
+
+topic5 <- aux %>% filter(topic==5) %>% select(stripped_text)
+topic5a = paste(topic5$stripped_text, collapse=" ")
+
+topic6 <- aux %>% filter(topic==6) %>% select(stripped_text)
+topic6a = paste(topic6$stripped_text, collapse=" ")
+
+all = c(topic1a, topic2a, topic3a, topic4a, topic5a, topic6a)
+all = removeWords(all, c(stopwords("english")))
+
+corpus = Corpus(VectorSource(all))
+tdm = TermDocumentMatrix(corpus)
+tdm2 <- removeSparseTerms(tdm, 0.7)
+# convert as matrix
+tdm = as.matrix(tdm)
+
+# add column names
+colnames(tdm) = c("HK News", "International", "USA and China", "Business", "Sports", "Mainland China")
+                  #,  "topic7", "topic8",  "topic9")
+
+comparison.cloud(tdm, random.order=FALSE,scale=c(4,0.4), 
+colors = c("midnightblue", "darkgoldenrod1", "goldenrod4", "dodgerblue3", "gray44",  "darkorange3"),
+title.size=0.8,
+max.words=5000) 
+```
+
+# User Cluster
+
+To help understand the behavior of each group of users inside the sub topic networks, we also developed a user clustering to understand the different kind of users in our data and how they interact with the different topics. For this task we used a K-mean algorithm, with 9 groups.
+
+```{r, out.width='90%', fig.align='center', echo = FALSE}
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/cluster.png')
+```
+
+# Sentiment Analysis
+
+Another interesting topic in social media is Sentiment Analysis and specially in the context of news this analysis helps understand how users react to each topic. It can also help to understand how the opinion is spread along the relationships trough the network. 
+As we can see from the cloud bellow, some words like: "american", "propaganda", "trade", "war" and "China" are very frequent in posts classified as negative. While words like: "Jack Ma", "founder", "CEOs" and "bravo" are frequent in positive posts.
+
+
+```{r, warning = FALSE, echo = FALSE, message = FALSE}
+aux_edge <- edge %>% select(vertice_1_id, vertice_2_id, date_created, status_id, text)
+aux_edge$stripped_text <- gsub("http.*","",  aux_edge$text)
+aux_edge$stripped_text <- gsub("https.*","", aux_edge$stripped_text)
+aux_edge$stripped_text <- gsub('[^\x20-\x7E]', '', aux_edge$stripped_text)
+words_edge <- aux_edge %>%
+  unnest_tokens(word, stripped_text) %>%
+  anti_join(stop_words)
+to_remove<- words_edge %>% filter(word=="tanya_plibersek")
+to_remove2 <- to_remove %>% group_by(status_id) %>% summarise(total = n()) 
+aux2_edge <- anti_join(edge, to_remove2, by=c("status_id"="status_id"))
+aux3_edge <- aux2_edge %>% select(status_id, text, date_created, sentiment_score)
+aux3_edge$stripped_text <- gsub("http.*","",  aux3_edge$text)
+aux3_edge$stripped_text <- gsub("https.*","", aux3_edge$stripped_text)
+aux3_edge$stripped_text <- gsub('[^\x20-\x7E]', '', aux3_edge$stripped_text)
+
+topic1 <- aux3_edge %>% filter(sentiment_score < -0.1) %>% select(stripped_text)
+topic1a = paste(topic1$stripped_text, collapse=" ")
+
+topic2 <- aux3_edge %>% filter(between(sentiment_score,-0.1,0.1)) %>% select(stripped_text)
+topic2a = paste(topic2$stripped_text, collapse=" ")
+
+topic3 <- aux3_edge %>% filter(sentiment_score>0.1) %>% select(stripped_text)
+topic3a = paste(topic3$stripped_text, collapse=" ")
+
+all = c(topic1a, topic2a, topic3a)
+all = removeWords(all, c(stopwords("english")))
+
+corpus = Corpus(VectorSource(all))
+tdm = TermDocumentMatrix(corpus)
+tdm2 <- removeSparseTerms(tdm, 0.6)    
+# convert as matrix
+tdm = as.matrix(tdm)
+
+# add column names
+colnames(tdm) = c("Negative", "Neutral", "Positive")
+                  #,  "topic7", "topic8",  "topic9")
+
+comparison.cloud(tdm, random.order=FALSE,scale=c(3,0.4), 
+colors = c("brown2", "gray44", "midnightblue"),
+title.size=0.8,
+max.words=5000)
+
+```
+
+# Social Network Graphs
+ 
+After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks as shown in the following image:
+
+```{r, out.width='90%', fig.align='center', echo = FALSE}
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/networks.png')
+```
+
+# Conclusion
+
+# Recommendations

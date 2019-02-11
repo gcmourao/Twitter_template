@@ -24,7 +24,7 @@ canonifyurls = true
 
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cashe$"]
 [permalinks]
-  post = "/:2018/:February/:02/"
+  #post = "/:2018/:February/:02/"
 
 [taxonomies]
   tag = "tags"
