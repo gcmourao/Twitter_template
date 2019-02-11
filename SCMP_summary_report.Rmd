@@ -241,7 +241,7 @@ all = removeWords(all, c(stopwords("english")))
 
 corpus = Corpus(VectorSource(all))
 tdm = TermDocumentMatrix(corpus)
-tdm2 <- removeSparseTerms(tdm, 0.6)
+tdm2 <- removeSparseTerms(tdm, 0.6)    
 # convert as matrix
 tdm = as.matrix(tdm)
 
@@ -257,7 +257,7 @@ max.words=5000)
 ```
 
 # Social Network Graphs
-
+ 
 After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks as shown in the following image:
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
