@@ -119,6 +119,25 @@ plot_ly(time, x = ~time, y = ~total, mode = 'lines', line = list(color = 'rgb(0,
 
 # Overview
 
+In this context, we know that SCMP is the primary source of content. So, it is reasonable to expect that its social network would be built around its profile. But, what we could see from its graph is that the power of its profile is so high that is hard to identify relevant sub-networks in its structure. 
+
+When we compare the betweenness centrality from the top users, we see that the difference between SCMP (top 1) and the other ones is huge. Note that this metric is normalized to make easier the comparison.
+|User*|Betweenness Centrality|
+|:---:|:---:|
+|Top 1|0.99|
+|Top 2|0.01|
+|Top 3|0.01 |
+|Top 4|0.01|
+|Top 5|0.01|
+According to Borgatti et all., "Betweenness centrality (Freeman 1979) is a measure of how often a given node falls along the shortest path between two other nodes." So, it means that SCMP profile is "in the middle" of the majority conversations and that's why is so hard to find sub-communities in this network.
+We were able to find 21 different communities in this network, but none of them are huge enough comparing to the giant component in dark blue. The most important ones are in blue, red, black and green. All the other small ones are in gray.
+
+
+*Even if the data that we collected is public, we decided to anonymize the user's names.
+
+```{r, out.width='90%', fig.align='center', echo = FALSE}
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/overview.png')
+```
 
 
 
