@@ -32,7 +32,7 @@ a:visited {
 
 # Introduction
 
-In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Out goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.
+In this project we analyzed the Twitter data from South China Morning Post with the goal to understand its Social Network on Twitter. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities that SCMP can capitalize on. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.
 
 # Data Extraction and Transformation 
 
@@ -260,7 +260,7 @@ all = removeWords(all, c(stopwords("english")))
 
 corpus = Corpus(VectorSource(all))
 tdm = TermDocumentMatrix(corpus)
-tdm2 <- removeSparseTerms(tdm, 0.6)
+tdm2 <- removeSparseTerms(tdm, 0.6)    
 # convert as matrix
 tdm = as.matrix(tdm)
 
@@ -276,7 +276,7 @@ max.words=5000)
 ```
 
 # Social Network Graphs
-
+ 
 After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks as shown in the following image:
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
