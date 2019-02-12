@@ -61,10 +61,10 @@ The resulting data was merged, and duplicated tweets were excluded. Besides that
 
 # Tools
 
-For our analysis, we had the option of choosing one of several software;
-- R
-- NodeXL
-- Gephi
+For our analysis, we had the option of choosing one of several software;   
+- R   
+- NodeXL   
+- Gephi   
 - Python
 
 NodeXL had the capability of handling most of the social network analysis we wanted to do. However, due to its limitations as an Excel plug-in in handling large amounts of data, we focused on using R for data extraction, time-series, topic modeling, natural language processing and cluster analysis. Python was used for data wrangling, and sentiment analysis under natural language processing. Gephi was used to perform social network analysis based on the extracted data.
@@ -113,7 +113,7 @@ In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relario
 In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in `Topic Cluster` and `User cluster` article.
 
 
-```{r}
+```{r, echo = FALSE}
 #preparing the data for the visualization: number of tweets per day
 time=tweet %>% mutate(day = as.Date(cut(created_at, breaks = "day"))) %>%
       group_by(day) %>% 
@@ -127,15 +127,16 @@ time <- left_join(time_aux, time, by = c("time" = "day"))
 plot_ly(time, x = ~time, y = ~total, mode = 'lines', line = list(color = 'rgb(0, 0, 102)', width = 3)) %>%
       add_lines() %>%
       layout(title="Tweets per day") %>%
-      rangeslider(time_aux$time[1], time_aux$time[5])
+      rangeslider(time_aux$time[1], time_aux$time[20])
 ```
 
 # Overview
 
 In this context, we know that SCMP is the primary source of content. So, it is reasonable to expect that its social network would be built around its profile. But, what we could see from its graph is that the power of this account is so high that is hard to identify relevant sub-networks in its structure. 
 
-When we compare the betweenness centrality from the top users, we see that the difference between SCMP (top 1) and the other ones is huge. Note that this metric is normalized to make easier the comparison.
-
+When we compare the betweenness centrality from the top users, we see that the difference between SCMP (top 1) and the other ones is huge. Note that this metric is normalized to make easier the comparison.   
+   
+ 
 |User*|Betweenness Centrality|
 |:---:|:---:|
 |Top 1|0.99|
@@ -148,7 +149,7 @@ SCMP profile is "in the middle" of the majority conversations (i.e edges) and th
 After running the modularity clustering available in Gephi, we were able to find 21 different communities and the most important ones are highlighted in dark blue, yellow, light blue, red, black, green and all the other (small) ones are in gray. As one can notice, comparing to the giant component in dark blue where SCMP node is in, none of others sub-networks have high relevance.   
 
 
-```{r, out.width='90%', fig.align='center', echo = FALSE}
+```{r, out.width='70%', fig.align='center', echo = FALSE}
 knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/overview.png')
 ```
 
@@ -161,8 +162,8 @@ If you understand more deeply those analysis you can go through the following ar
 
 As said before, SCMP is a important player in Media field, so it is always producing content about several different subjects. As we can see from their web site, they even classify it as:
 
-```{r}
-#image
+```{r, out.width='90%', fig.align='center', echo = FALSE}
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/topic_SCMP.jpg')
 ```
 
 With this said, we decided to identify the natural topics that were commented in SCMP network. Notice that we are considering not only SCMP posts but also all the other users' tweets, which means that the analysis is broader then just the content that SCMP produces alone, since it considers the engagement to the topics spread through its network.
@@ -174,9 +175,9 @@ As output of this modeling part we got 6 different topics as described below:
 - "Mainland China": News inside the Mainland China. Some of the popular news in this topic is the ones about a group of Christians that were arrested during this period.   
 - "Sports": In this case the news that generated most engagement were the ones related to some rumors of Japan Olympic games boycott because of the new Japanese police about Whale Hunting.   
 - "Business": General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".   
-Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably they reach a very specific kind of user that comparing to the whole network doesn't play a role important enough for us to identify it as an isolated topic.
+Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably the non-identified topics reach a very specific kind of user and, comparing to the whole network, it doesn't play a role important enough for us to identify it as an isolated topic.  
 
-```{r, message = FALSE, warning=FALSE}
+```{r, echo = FALSE, message = FALSE, warning=FALSE, cache=TRUE}
 #selecting the important variables. The topic variable was obtained using the *** function. More details about this modeling part are found in Topic Modelling article. 
 aux <- tweet %>% select(status_id, text, created_at, topic)
 
@@ -239,7 +240,9 @@ knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/clu
 ```
 
 Our results show that we have some groups that are specialized in one of the topics obtained with the topic modeling part. Which means that during this period in our data their interaction was more focused in one of the topics when comparing to the other ones. For example, the cluster "Hong Kong News - Neutral sentiment" has more posts in the topic "Hong Kong News" than in the other ones. Regardless the topic variable, the users from the specialized clusters ("Hong Kong News - Neutral sentiment", "China News with negative sentiment", "Sports News with negative sentiment", "International News with negative sentiment", "Entertainment News", "USA and China News with negative sentiment") are similar in terms of account information. They have similar average number of followers, tweets and account age, and comparing to the other clusters, they are smaller. In summary, they are just average users with more interest in one of modeled topics than the others.   
-The other three groups ("Small users very active in this context", "Big Accounts", "Heavy tweet users") are more generic in terms of topic interest. During the period they didn't show some specialization in some of the topics, they rather talk/ interact with all of them. The difference between them is the size of the account. The group "Small users very active in this context", have the same characteristic from the specialized groups regarding the account size, but they have a different behavior in this context. They are very active and interested in all kind of news and they have the second higher number of tweets per user (average).
+The other three groups ("Small users very active in this context", "Big Accounts", "Heavy tweet users") are more generic in terms of topic interest. During the period they didn't show some specialization in some of the topics, they rather talk/ interact with all of them. The difference between them is the size of the account. The group "Small users very active in this context", have the same characteristic from the specialized groups regarding the account size, but they have a different behavior in this context. They are very active and interested in all kind of news and they have the second higher number of tweets per user (average).   
+Having these user groups gives a better chance for targeting users with content they are more likely to engage in. This will lead to a greater likelihood for them to follow through visiting SCMP's website for more news; which is way to SCMP capitalize its social media strategy.
+
 
 ## Sentiment Analysis
 
@@ -247,7 +250,7 @@ Another interesting topic in social media is Sentiment Analysis and specially in
 As we can see from the cloud bellow, some words like: "american", "propaganda", "trade", "war" and "China" are very frequent in posts classified as negative. While words like: "Jack Ma", "founder", "CEOs" and "bravo" are frequent in positive posts.
 
 
-```{r, warning = FALSE, echo = FALSE, message = FALSE}
+```{r, warning = FALSE, echo = FALSE, message = FALSE, cache=TRUE}
 aux_edge <- edge %>% select(vertice_1_id, vertice_2_id, date_created, status_id, text)
 aux_edge$stripped_text <- gsub("http.*","",  aux_edge$text)
 aux_edge$stripped_text <- gsub("https.*","", aux_edge$stripped_text)
@@ -299,23 +302,51 @@ some agreement visualization
 
 # Social Network Graphs
  
-After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks.
+After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks. To generate each of these visualizations we split the data according to the tweet topic classification (i.e edge) and then applied the color to the node's correspondent to the user cluster and the edges colors are the sentiment classification.   
+Each of the sub-networks obtained are now relevant enough and more meaningful, since we can easily see the kind of user and sentiment in each of them. Besides that, we can identify new brokers that wasn't possible to identify in the first visualization. Which means that depending on the context (topic) the users that are influencers in the network are different.
 
-```{r, out.width='90%', fig.align='center', echo = FALSE}
+
+```{r, out.width='95%', fig.align='center', echo = FALSE}
 knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/networks.png')
 ```
+<br>
+<br>     
+So, based on this result some strategies can be designed specific for each of those groups. For example, lets focused in USA and China News sub-network:
+
+```{r, out.width='50%', fig.align='center', echo = FALSE}
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/topic3_v7.png')
+```
+- Predominantly, we see two users' types: "USA and China News" and "Heavy users in SCMP network". This same pattern repeats for all the other sub-networks, the two major user groups are the ones interested in the specific topic and the heavy users.    
+- We could identify two other important users that have high betweenness centrality in the network. They are in the middle of the shortest path between the isolated points and SCMP profile. It is interesting to notice that the sentiment from the "broker's followers" replicates the broker's sentiment spread previously, which means that their opinion is very important and in a certain way followed by the users connected with him.
+   
+ 
+|User*|Betweenness Centrality|Degree|
+|:---:|:---:|:---:|
+|Top 1|0.90|1301|
+|Top 2|0.37|654|
+|Top 3|0.15|260|    
+
+Those isolated groups can be target with prospect strategies. SCMP can try to reach them through advertisement to engage a direct conversation at first moment (convert them as followers). This will help them to engage more with SCMP content and eventually in the future they can be potential clients for its subscription.   
+We could identify the same pattern in other networks: "Sports News", "Mainland China News" and "Business News".    
+In summary the information about each network can be used to design:    
+- Prospect strategies for the isolated groups (not directly connected with the giant component)    
+- Support to give the right context in each advertisement or marketing campaign run in the network. Since we already know the user's characteristics and what they usually engage more.    
+- Improve user experience by customizing the SCMP website for registered users bases in the topics that they are more interested in.
 
 # Conclusion
 
-# Recommendations
+Using some statistical models together with social network theory we were able to identify some patterns in data and understand more deeply the users involved in this network. Over the course of the analysis, our discussions and insights have led to the following conclusions.   
+- Negative news tends to have a bigger outreach twitter engagements.   
+- The SCMP Network is very concentrated around SCMP profile. More than 80% of all users are classified in the network that SCMP is in and most of users are direct neighbors.   
+- There are many disconnected sub-networks in the data that are connected to the giant component by some specific user. Those disconnected groups are formed by users with specific topic interest.   
+- Those broker users are also influencers in the network since their followers tend to replicate their sentiment.   
+We believe that SCMP can take opportunity of this knowledge to create prospect strategies and expand even more their network, by targeting the isolated groups using the right topic with the right perspective they can get the engagement form this users.
 
-### Title 3
 
-#### Title 4
+# Recommendations   
+- We believe that would be interesting to add more data points to calibrate topic modeling and user clustering. It would help to improve the user interest identification, to remove any bias related to the period.   
+- The developed analysis can also support costumer experience improvements. For the registered users, the information about its behavior in the social media can guide some customizations in the SCMP website so it would fit user`s interest.
 
-##### Title 5
-
-###### Title 6
 
 # Resourses:
 <div>Twitter Icon made by <a href="https://www.freepik.com/" title="Freepik">Freepik
@@ -324,6 +355,7 @@ is licensed by
 <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY
 </a>
 </div>
+
 
 
 
