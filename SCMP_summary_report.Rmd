@@ -37,7 +37,7 @@ Now, in order to have a good performance in terms of profit and engagement it's 
 The South China Morning Post was established in Hong Kong in 1903 by Tse Tsan-Tai and Alfred Cunningham and published its first newspaper in English on November 6th 1900. 115 years later it is one of the most important news portal in Hong Kong and was acquired by Alibaba in 2015. It set out to be a global media company that reports mainly about Hong Kong and mainland China to an international audience.  
 SCMP produces content that covers multiple topics such as business, technology, and lifestyle. In order to achieve its mission of becoming the bridge of communication between Asia and the world,  SCMP went through a series of transformations in 2018 that has allowed them to reach a broader audience.   
 In this project we analyzed the Twitter data from SCMP aiming to understand its Social Media Network. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities on how SCMP can capitalize on its social media strategy. This project was developed as part of Social Media Course grading at Business Analytics Master Course at Hong Kong University.    
-This article is divide in the following sections:
+This article is divide in the following sections:    
 - Data Extraction and Transformation   
 - Tools   
 - Overview   
@@ -145,7 +145,7 @@ When we compare the betweenness centrality from the top users, we see that the d
 |Top 5|0.01|
 
 SCMP profile is "in the middle" of the majority conversations (i.e edges) and that's why is so hard to find sub-communities in this network, since most of the relationships are directly related to SCMP.
-After running the modularity clustering available in Gephi, we were able to find 21 different communities. The most important ones are highlighted in dark blue, yellow, light blue, red, black, green and all the other (small) ones are in gray. As one can notice, comparing to the giant component in dark blue where SCMP node is in, none of others sub-networks have high relevance.   
+After running the modularity clustering available in Gephi, we were able to find 21 different communities and the most important ones are highlighted in dark blue, yellow, light blue, red, black, green and all the other (small) ones are in gray. As one can notice, comparing to the giant component in dark blue where SCMP node is in, none of others sub-networks have high relevance.   
 
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
@@ -159,24 +159,22 @@ If you understand more deeply those analysis you can go through the following ar
 
 ## Topic Modelling
 
-As a huge media company, SCMP is always producing content from a variety of subjects. As we can see from their web site, they even classify it as:
+As said before, SCMP is a important player in Media field, so it is always producing content about several different subjects. As we can see from their web site, they even classify it as:
 
 ```{r}
 #image
 ```
 
-With this said, we decided to identify the natural topics that were commented in SCMP network. Notice that we are considering not only SCMP posts but also all the other users' tweets. So, the analysis is broader then the content that SCMP produces alone, since it considers the engagement to the topics spread through its network.
-To achieve this goal, we used some Natural Language Process algorithms to access these topics and find groups of common content. 
-We decided to use LDA (Latent ... Algorithm) to this analysis and we found 6 different groups in our data:  
-- "USA and China": News related to USA and China relationship. With special attention to the Trade war issue that was quite discussed in this period and that's the reason why these words are bigger than the others.]
-- "International": News related to the international scene. In this part of the cloud we can se the name of some countries like "Canada", "Japan" and "India". In this topic the principal news is related to the arrestment of Huawei's owner daughter in Canada.
-- "Hong Kong News": In this topic we have many different topic news but all of them happening or having relationship in Hong Kong.
-- "Mainland China": News inside the Mainland China. Some of the popular news in this topic is the ones about the group of Christians that were arrested during this period.
-- "Sports": In this case the news that generated most engagement was the one related to some rumors of Japan Olympic games boycott because of the new Japanese police to Whale Hunting.
-- "Business": General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".
- 
-Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably they reach a very specific kind of user that comparing to the whole network doesn't play a very important role.
-
+With this said, we decided to identify the natural topics that were commented in SCMP network. Notice that we are considering not only SCMP posts but also all the other users' tweets, which means that the analysis is broader then just the content that SCMP produces alone, since it considers the engagement to the topics spread through its network.
+To achieve this goal, we used a popular topic model algorithm called Latent Dirichlet Allocation (available in `topicmodel` R package), which is an unsupervised method for classification of documents. 
+As output of this modeling part we got 6 different topics as described below:   
+- "USA and China": News related to USA and China relationship. With special attention to the Trade war issue that was quite discussed in this period and that's why these words are bigger than the others.    
+- "International": News related to the international scene. In this part of the cloud we can see the name of some countries like "Canada", "Japan" and "India". In this topic the principal news was related to the arrest of a top Huawei executive in Canada.    
+- "Hong Kong News": In this topic we have many different topic news but all of them happened or had some relationship with Hong Kong.    
+- "Mainland China": News inside the Mainland China. Some of the popular news in this topic is the ones about a group of Christians that were arrested during this period.   
+- "Sports": In this case the news that generated most engagement were the ones related to some rumors of Japan Olympic games boycott because of the new Japanese police about Whale Hunting.   
+- "Business": General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".   
+Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably they reach a very specific kind of user that comparing to the whole network doesn't play a role important enough for us to identify it as an isolated topic.
 
 ```{r, message = FALSE, warning=FALSE}
 #selecting the important variables. The topic variable was obtained using the *** function. More details about this modeling part are found in Topic Modelling article. 
@@ -227,15 +225,21 @@ max.words=5000)
 
 We also developed a user clustering to understand the different kind of users in our data and how they interact with the different topics. For this task we used a K-mean algorithm, with 9 groups.
 The variables used in this model are:
--
--
--
--
+- Percentage of tweets in each of the topics found with the previous model
+- Number of followers
+- Number of following profiles
+- Number of Tweets. Is this case is the total number of tweets that the users posted in his account.
+- Average sentiment. According to the sentiment analysis that will be explained in the next session.
+- Number of tweets in the period.
 
+All variales were normaliled before running the K-means algorithm. For this case, the best solution that we got had 9 groups:
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
-knitr::include_graphics('C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/cluster.png')
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/cluster.png')
 ```
+
+Our results show that we have some groups that are specialized in one of the topics obtained with the topic modeling part. Which means that during this period in our data their interaction was more focused in one of the topics when comparing to the other ones. For example, the cluster "Hong Kong News - Neutral sentiment" has more posts in the topic "Hong Kong News" than in the other ones. Regardless the topic variable, the users from the specialized clusters ("Hong Kong News - Neutral sentiment", "China News with negative sentiment", "Sports News with negative sentiment", "International News with negative sentiment", "Entertainment News", "USA and China News with negative sentiment") are similar in terms of account information. They have similar average number of followers, tweets and account age, and comparing to the other clusters, they are smaller. In summary, they are just average users with more interest in one of modeled topics than the others.   
+The other three groups ("Small users very active in this context", "Big Accounts", "Heavy tweet users") are more generic in terms of topic interest. During the period they didn't show some specialization in some of the topics, they rather talk/ interact with all of them. The difference between them is the size of the account. The group "Small users very active in this context", have the same characteristic from the specialized groups regarding the account size, but they have a different behavior in this context. They are very active and interested in all kind of news and they have the second higher number of tweets per user (average).
 
 ## Sentiment Analysis
 
@@ -295,10 +299,10 @@ some agreement visualization
 
 # Social Network Graphs
  
-After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks as shown in the following image:
+After modeling the topic, user cluster and sentiment, we were able to put all those pieces together and split the data into sub - networks.
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
-knitr::include_graphics('C:/Users/gabriela.mourao/Documents/6-PESSOAL/MsC_Business_analytics/09-MSBA7012/Final_report/networks.png')
+knitr::include_graphics('C:/Users/gabriela.mourao/Documents/Twitter_template/networks.png')
 ```
 
 # Conclusion
