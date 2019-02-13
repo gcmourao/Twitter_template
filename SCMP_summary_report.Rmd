@@ -246,9 +246,9 @@ Having these user groups gives a better chance for targeting users with content 
 
 ## Sentiment Analysis
 
-Another interesting topic in social media is Sentiment Analysis and specially in the context of news this analysis helps understand how users react to each topic. It can also help to understand how the opinion is spread along the relationships trough the network. But even more interestingly is the agreement analysis.....
-As we can see from the cloud bellow, some words like: "american", "propaganda", "trade", "war" and "China" are very frequent in posts classified as negative. While words like: "Jack Ma", "founder", "CEOs" and "bravo" are frequent in positive posts.
+Another interesting topic in social media is Sentiment Analysis and specially in the context of news, this analysis helps understand how users react to each topic. It can also help to understand how the opinion is spread along the relationships trough the network. But even more interestingly is the agreement analysis, which shows the extent to which the sentiment of the users matches the sentiments of the original news posts. This kind of analysis in this context can be used as a means of the assessing how peeople perceive the crediblity of a news agency.
 
+As we can see from the cloud bellow, some words like: "american", "propaganda", "trade", "war" and "China" are very frequent in posts classified as negative. While words like: "Jack Ma", "founder", "CEOs" and "bravo" are frequent in positive posts. Given the time-frame context and the fact that SCMP is a Chinese News paper targeting readers from accross the world, this word cloud shows that SCMP is objective in report its news. Under regular circumstances news on the trade war between China and the United States of America, during the time when tension was highest, would be expected to have negative sentiments. And this is reflected in the negative words in word cloud. So this shows objectivity when it comes to the reporting of SCMP's news.
 
 ```{r, warning = FALSE, echo = FALSE, message = FALSE, cache=TRUE}
 aux_edge <- edge %>% select(vertice_1_id, vertice_2_id, date_created, status_id, text)
@@ -293,10 +293,10 @@ max.words=5000)
 
 ```
 
-some agreement visualization
+Our expectation from an agreement analysis is that on average, the sentiment scores of SCMP's posts would match the sentiment scores of the the replies to SCMP's posts. What we see in the agreement visualization below is that majority of 
 
-```{r}
-
+```{r, out.width='95%', fig.align='center', echo = FALSE}
+knitr::include_graphics('SCMP Agreement.png')
 ```
 
 
