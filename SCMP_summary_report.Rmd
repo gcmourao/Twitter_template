@@ -29,8 +29,16 @@ a:visited {
 
 <img src="twitter.svg" style="position:fixed;top:10px;left:55px;" width="100" height="100"/>
 
-This article was developed based on a group project for Social Media course. The final project was a result of a group effort and everybody worked really hard to build all the analysis that will be presented here.
-Me and Mawuli decided them to make some 
+
+  This article was developed based on the final project for Social Media Course at Business Analytics Master Course at The University of Hong Kong. The project is a result of team effort and everybody worked really hard to deliver all analysis that are going to be presented later on. I would like to say thank you for all my team mates: August Hjorth, Maria Raquel Gomez Lopez, Martina de Luca, Xiaoyen Chen and Mawuli Adjei. :)    
+  Later, me and Mawuli decided to use the project content to publish some articles that could be useful for other persons that are planning to develop similar studies. This will be the first of five different articles based in that project:   
+<br>
+- [Summary report](https://): In this article we are focusing on insights obtained through the analysis and its application to business. It works as a summary, without go too deep into technical aspects. Since we are students at Business Analytics Course, we decided that would be interesting to show a little bit how analytics tools can be applied to give insights to business and support data drive strategies.   
+- [Topic Modeling](https://): In this article we are going to show in more detail how we develop the topic modeling. It will be more technical and focused on the step by step of our R-script.    
+- [User Cluster](https://): Similar to the Topic Modeling article, in this one we are going to focus on the User Cluster Development.    
+- [Sentiment Analysis](https://): Again, this will be more technical article, focused both on the sentiment analysis and agreement analysis.    
+- [Social Networks Analysis with Gephi](https://): In this article we are going to explore basic Social Network concepts as well give a brief introduction to Gephi.
+<br>
 
 # Introduction
 
@@ -38,7 +46,7 @@ The online newspaper sector is one of the most vulnerable to drastic changes esp
 Now, in order to have a good performance in terms of profit and engagement it's necessary to be active on many platforms. We decided to analyse the South China Morning Post due to their particular position which covers printed newspapers, an active Facebook presence, Instagram and Twitter account. Even though the newspapers sector is now facing many challenges, this journal is one of the most competitive in the world.  
 The South China Morning Post was established in Hong Kong in 1903 by Tse Tsan-Tai and Alfred Cunningham and published its first newspaper in English on November 6th 1900. 115 years later it is one of the most important news portal in Hong Kong and was acquired by Alibaba in 2015. It set out to be a global media company that reports mainly about Hong Kong and mainland China to an international audience.  
 SCMP produces content that covers multiple topics such as business, technology, and lifestyle. In order to achieve its mission of becoming the bridge of communication between Asia and the world,  SCMP went through a series of transformations in 2018 that has allowed them to reach a broader audience.   
-In this project we analyzed the Twitter data from SCMP aiming to understand its Social Media Network. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities on how SCMP can capitalize on its social media strategy. This project was developed as part of Social Media Course grading at Business Analytics Master Course at The University of Hong Kong.    
+In this project we analyzed the Twitter data from SCMP aiming to understand its Social Media Network. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities on how SCMP can capitalize on its social media strategy.    
 This article is divide in the following sections:    
 - Data Extraction and Transformation   
 - Tools   
@@ -91,7 +99,7 @@ library(ggpubr)
 ```
 
 ```{r, include = FALSE}
-setwd("C:/Users/gcmou/Documents/GitHub/Twitter_template")
+setwd("C:/Users/gabriela.mourao/Documents/Twitter_template")
 tweet <- read.csv("SCMPNews_tweet_data_full_new.csv")
 tweet$created_at <- as.POSIXct(as.character(levels(tweet$created_at)), format = "%Y-%m-%d %H:%M")[tweet$created_at]
 vertice <- read.csv("SCMPNews_vertices_data_full_new.csv")
@@ -176,6 +184,7 @@ To achieve this goal, we used a popular topic model algorithm called Latent Diri
 - **Mainland China**: News inside the Mainland China. Some of the popular news in this topic is the ones about a group of Christians that were arrested during this period.   
 - **Sports**: In this case the news that generated most engagement were the ones related to some rumors of Japan Olympic games boycott because of the new Japanese police about Whale Hunting.   
 - **Business**: General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".   
+<br>
 Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably the non-identified topics reach a very specific kind of user and, comparing to the whole network, it doesn't play a role important enough for us to identify it as an isolated topic.  
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE, cache=FALSE}
@@ -345,6 +354,7 @@ We believe that SCMP can take opportunity of this knowledge to create prospect s
 
 
 # Recommendations   
+
 - We believe that would be interesting to add more data points to calibrate topic modeling and user clustering. It would help to improve the user interest identification, to remove any bias related to the period.   
 - The developed analysis can also support costumer experience improvements. For the registered users, the information about its behavior in the social media can guide some customizations in the SCMP website so it would fit user`s interest.
 
