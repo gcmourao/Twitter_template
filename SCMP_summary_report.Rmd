@@ -294,7 +294,7 @@ max.words=5000)
 
 ```
 
-Our expectation from an agreement analysis is that on average, the sentiment scores of SCMP's posts would match the sentiment scores of the the replies to SCMP's posts. What we see in the agreement visualization below is that majority of 
+Our expectation from an agreement analysis is that on average, the sentiment scores of SCMP's posts would match the sentiment scores of the the replies to SCMP's posts. What we see in the agreement visualization below is that majority of SCMP's tweets had neutral sentiments, while the negative sentimented tweets were more than the positive sentimented tweets. On the other hand the replies also had neutral sentiments with the remaining ones being evenly distributed among the positive and negative tweets. What this means is that there is a good level of agreement on average in the replies to the posts that SCMP put out. This indicates a good level of trust in SCMP's users and this is positive for any news company.
 
 ```{r, out.width='95%', fig.align='center', echo = FALSE}
 knitr::include_graphics('SCMP histogram.png')
