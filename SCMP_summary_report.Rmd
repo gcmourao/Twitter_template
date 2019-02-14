@@ -65,12 +65,12 @@ This article is divided in the following sections:
 
 # Data Extraction and Transformation 
 
-To extract the data from Twitter, we used the package `rtweet` using the search term "SCMPNews". The data was extract three times during the period from Dec/18 and Jan/19:  
+To extract the data from Twitter, we used the package `rtweet` using the search term "SCMPNews". The data was extracted three times during the period from Dec/18 to Jan/19:  
 - First Extraction: 18th - December - 2018  
 - Second Extraction: 25th - December - 2018   
 - Third Extraction: 1st - January - 2019   
    
-The resulting data was merged, and duplicated tweets were excluded. Besides that, from the original data extracted, the team broke it down into three different component files that was used in the further analysis:  
+The resulting data was merged, and duplicated tweets were excluded. Besides that, from the original data extracted, the team broke it down into three different component files that were used in the further analysis. These files are:  
 - Vertex data: File with information about the user account like number of friends, number of tweets, account language and others.  
 - Edge data: File with user's relationship trough tweets, like: retweet, reply, mention and others.  
 - Tweet Data: Is the original file extract using the Twitter API.
@@ -125,8 +125,8 @@ theme_SCMP <- theme_classic() +
               axis.text.x = element_text(colour = "gray48"))
 ```
     
-In our final data we have 25.372 uniques tweets, 13.267 users and 50.157 relarionships (We only considered for this analysis tweets in english) 
-In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there were some event that made the amount of tweets increase dramatically. After some analysis we figure out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in [Topic Cluster](https://) and [User cluster](https://) article.
+In our final data we had 25.372 uniques tweets, 13.267 users and 50.157 relationships (We only considered tweets in English for this analysis) 
+In average there are 1103 tweets per day in the data, but  we clearly see that on the 18th of December, there was some event that made the amount of tweets increase dramatically. After some analysis we figured out that the trending topic at that day was the "USA and China Trade war". You can see more details about this in [Topic Cluster](https://) and [User cluster](https://) article.
 
 
 ```{r, echo = FALSE}
@@ -160,7 +160,7 @@ However, what we could see from its graph is that the power of this account is s
 |Top 4|0.03|343|
 |Top 5|0.02|121|
 
-According to Borgatti et al. (2013)^[Borgatti, S., Everett, M., Johnson, J. 2013. Analyzing Social Networks. 1st ed., SAGE], betweenness centrality "is a measure of how often a given node falls along the shortest path between two other nodes". So, the high value obtained for SCMP node means that its profile is "in the middle" of most conversations (i.e edges) and that's why is difficult to find sub-communities in this network, since most of the relationships are directly related to SCMP.
+According to Borgatti et al. (2013)^[Borgatti, S., Everett, M., Johnson, J. 2013. Analyzing Social Networks. 1st ed., SAGE], betweenness centrality "is a measure of how often a given node falls along the shortest path between two other nodes". So, the high value obtained for SCMP node means that its profile is "in the middle" of most conversations (i.e edges). That's why it's difficult to find sub-communities in this network, since most of the relationships are directly related to SCMP.
 After running the modularity clustering available in Gephi, we were able to find 21 different communities and the most important ones are highlighted in dark blue, yellow, light blue, red, black, purple and all the other (small) ones are in gray. As one can notice, comparing to the giant component in dark blue where SCMP node is in, none of the others sub-networks have high relevance.   
 
 
@@ -170,28 +170,28 @@ knitr::include_graphics('overview_no_label.png')
 
 # The Alternative Approach
 
-To come up with more insightful analysis we decided to user an alternative approach by combining topic clustering, user clustering and sentiment analysis to split this giant network into meaningful sub-networks.
-If you understand more deeply those analysis you can go through the following articles: [Topic Modeling](https://), [User Cluster](https://), [Sentiment Analysis](https://), [Social Network Analysis with Gephi](https://)
+To come up with more insightful analysis, we decided to user an alternative approach by combining topic clustering, user clustering and sentiment analysis to split this giant network into meaningful sub-networks.
+For a deeper understanding of those analyses you can go through the following articles: [Topic Modeling](https://), [User Cluster](https://), [Sentiment Analysis](https://), [Social Network Analysis with Gephi](https://)
 
 ## Topic Modelling
 
-As said before, SCMP is a important player in Media field, so it is always producing content about several different subjects. Those topics are classified in their website as follow:
+As said before, SCMP is a important player in the News sector. As such it is always producing content about several different subjects. Those topics are classified in their website as follow:
 
 ```{r, out.width='90%', fig.align='center', echo = FALSE}
 knitr::include_graphics('topic_SCMP.jpg')
 ```
 
-With this said, we decided to identify the natural topics that were commented in SCMP network. Notice that we are considering not only SCMP posts but also all the other users' tweets, which means that the analysis is broader then just the content that SCMP produces alone, since it considers the engagement to the topics spread through its network.
-To achieve this goal, we used a popular topic model algorithm called Latent Dirichlet Allocation (available in `topicmodel` R package), which is an unsupervised method. As output of this modeling part we got 6 different topics as described below:   
+With this said, we decided to identify the naturally occuring topics that were commented in SCMP network. Notice that we are considering not only SCMP posts but also all the other users' tweets, which means that the analysis is broader then just the content that SCMP produces alone, since it considers the engagement to the topics spread through its network.
+To achieve this goal, we used a popular topic model algorithm called Latent Dirichlet Allocation (available in `topicmodel` R package), which is an unsupervised machine learning method. As output of this modeling part we got 6 different topics as described below:   
 <br>
-- **USA and China**: News related to USA and China relationship. With special attention to the Trade war issue that was quite discussed in this period and that's why these words are bigger than the others.    
-- **International**: News related to the international scene. In this part of the cloud we can see the name of some countries like "Canada", "Japan" and "India". In this topic the principal news was related to the arrest of a top Huawei executive in Canada.    
+- **USA and China**: News related to the international relationship between USA and China. This refers to posts and conversationtions that had special attention to the Trade war issue druing this period. This explains why these words are bigger than the others.    
+- **International**: News related to the international scene. In this part of the cloud we can see the name of some countries like "Canada", "Japan" and "India". In this topic the principal news item was related to the arrest of a top Huawei executive in Canada.    
 - **Hong Kong News**: In this topic we have many different topic news but all of them happened or had some relationship with Hong Kong.    
-- **Mainland China**: News inside the Mainland China. Some of the popular news in this topic is the ones about a group of Christians that were arrested during this period.   
+- **Mainland China**: News from or about Mainland China. Some of the popular news items in this topic are about a group of Christians that were arrested during this period.   
 - **Sports**: In this case the news that generated most engagement were the ones related to some rumors of Japan Olympic games boycott because of the new Japanese police about Whale Hunting.   
 - **Business**: General news about business. In this cloud we can see some terms like: "Jack Ma", "CEOs", "wrapping" and "Christmas".   
 <br>
-Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produces enough engagement. Probably the non-identified topics reach a very specific kind of user and, comparing to the whole network, it doesn't play a role important enough for us to identify it as an isolated topic.  
+Interestingly, we didn't find all the contents that SCMP classify in its website, which means that not all of them produce enough engagement. Probably the non-identified topics reach a very specific kind of user and, comparing to the whole network, it doesn't play a role important enough for us to identify it as an isolated topic.  
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE, cache=FALSE}
 #selecting the important variables. The topic variable was obtained using the *** function. More details about this modeling part are found in Topic Modelling article. 
@@ -245,7 +245,7 @@ The variables used in this model are:
 - Percentage of tweets in each of the topics found with the previous model    
 - Number of followers    
 - Number of following profiles    
-- Number of Tweets. Is this case is the total number of tweets that the users posted in his account.    
+- Number of Tweets. Is this case is the total number of tweets that each users posted in their accounts.    
 - Average sentiment. According to the sentiment analysis that will be explained in the next session.    
 - Number of tweets in the period.
 
@@ -326,7 +326,7 @@ knitr::include_graphics('networks.png')
 ```
 <br>
 <br>     
-So, based on this result some strategies can be tailored for each of those groups. For example, lets focused in USA and China News sub-network:
+So, based on this result some strategies can be tailored for each of those groups. For example, lets focuse on the USA and China News sub-network:
 
 ```{r, out.width='50%', fig.align='center', echo = FALSE}
 knitr::include_graphics('topic3_v7.png')
@@ -341,7 +341,7 @@ knitr::include_graphics('topic3_v7.png')
 |Top 2|0.37|654|
 |Top 3|0.15|260|    
 
-Those isolated groups could be selected, for example, as target for prospect strategies. SCMP can try to reach them through advertisement to engage a direct conversation at first moment (convert them as followers). This will led them to engage more with SCMP content and eventually in the future they could be potential clients for its subscription.   
+Those isolated groups could be selected, for example, as target for prospect strategies. SCMP can try to reach them through advertisement to engage a direct conversation at first moment (convert them as followers). This will led them to engage more with SCMP content and eventually in the future they could be potential clients for SCMP's online news subscription service.   
 We can identify the similar pattern in the following sub-networks: "Sports News", "Mainland China News" and "Business News".
 <br>
 In summary the information about each network can be used to design:    
@@ -353,7 +353,7 @@ In summary the information about each network can be used to design:
 
 Using some statistical models together with social network theory we were able to identify some patterns in data and understand more deeply the users involved in this network. Over the course of the analysis, our discussions and insights have led to the following conclusions.   
 - Negative news tends to have a bigger outreach twitter engagements.   
-- The SCMP Network is very concentrated around SCMP profile. More than 80% of all users are classified in the network that SCMP is in and most of users are direct neighbors.   
+- The SCMP Network is very concentrated around SCMP profile. More than 80% of all users are classified in the network that SCMP is in and most of the users in SCMP's news network are direct neighbors.   
 - There are many disconnected sub-networks in the data that are connected to the giant component by some specific user. Those disconnected groups are formed by users with specific topic interest.   
 - Those users are also influencers in the network since their followers tend to replicate their sentiment.   
 We believe that SCMP can take opportunity of this knowledge to create prospect strategies and expand even more their network, by targeting the isolated groups using the right topic with the right perspective they can get the engagement form this users.
