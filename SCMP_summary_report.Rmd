@@ -30,11 +30,12 @@ a:visited {
 <img src="twitter.svg" style="position:fixed;top:10px;left:55px;" width="100" height="100"/>
 
 
-  This article was developed based on the final project for Social Media Course at Business Analytics Master Course at The University of Hong Kong. The project is a result of team effort and everybody worked really hard to deliver all analysis that are going to be presented later on. I would like to say thank you for all my team mates: August Hjorth, Maria Raquel Gomez Lopez, Martina de Luca, Xiaoyen Chen and [Mawuli Adjei](https://www.linkedin.com/in/mawuliadjei/). :)    
-  Later, me and Mawuli decided to use the project content to publish some articles that could be useful for other persons that are planning to develop similar studies. This will be the first of five different articles based in that project:   
+  This article was developed based on the final project for a Social Media Analytics Course in the University of Hong Kong's Master of Business Analytics programme. The project is a result of a team effort and everybody worked really hard to deliver all analysis that are going to be presented later on. I would like to say thank you to all my team mates: August Hjorth, Maria Raquel Gomez Lopez, Martina de Luca, Xiaoyen Chen and [Mawuli Adjei](https://www.linkedin.com/in/mawuliadjei/). :)    
+
+Later, Mawuli and I decided to use the project content to publish some articles that could be useful for other persons that are planning to develop similar studies. This will be the first of five different articles based in that project:   
 <br>
-- [Summary report](https://): In this article we are focusing on insights obtained through the analysis and its application to business. It works as a summary, without go too deep into technical aspects. Since we are students at Business Analytics Course, we decided that would be interesting to show a little bit how analytics tools can be applied to give insights to business and support data drive strategies.   
-- [Topic Modeling](https://): In this article we are going to show in more detail how we develop the topic modeling. It will be more technical and focused on the step by step of our R-script.    
+- [Summary report](https://): In this article we focus on insights obtained through the analysis and its application to business. It works as a summary, without going too deep into technical aspects. Since we are students in a Business Analytics programme, we decided that it would be interesting to show a little of how analytics tools can be applied to give insights to business and support data drive strategies.
+- [Topic Modeling](https://): In this article we are going to show in more detail how we used algorithms to perform topic modeling. It will be more technical and focused on a step by step break down of our R-script.  
 - [User Cluster](https://): Similar to the Topic Modeling article, in this one we are going to focus on the User Cluster Development.    
 - [Sentiment Analysis](https://): Again, this will be more technical article, focused both on the sentiment analysis and agreement analysis.    
 - [Social Networks Analysis with Gephi](https://): In this article we are going to explore basic Social Network concepts as well give a brief introduction to Gephi.
@@ -42,12 +43,17 @@ a:visited {
 
 # Introduction
 
-The online newspaper sector is one of the most vulnerable to drastic changes especially due to the emergence of new online services and strategies. The challenges are growing , not only in terms of technology developments and distribution channels, but also due the presence of new competitors: social networks. Physical sales are decreasing and new online and social strategies are needed to attract an audience online and to increase ad revenue.    
-Now, in order to have a good performance in terms of profit and engagement it's necessary to be active on many platforms. We decided to analyse the South China Morning Post due to their particular position which covers printed newspapers, an active Facebook presence, Instagram and Twitter account. Even though the newspapers sector is now facing many challenges, this journal is one of the most competitive in the world.  
+The online newspaper sector has seen a lot of rapid change due to the emergence of social media. Many news agencies, like South China Morning Post, have switched up and adopted new online and social strategies to attract an audience online and increase revenue.
+
+Now, in order to have a good performance in terms of profit and engagement, South China Morning Post is very active particularly on Twitter. We decided to analyse them as they one of the most competitive in the world in broadcasting news from China to the rest of the world.  
+
 The South China Morning Post was established in Hong Kong in 1903 by Tse Tsan-Tai and Alfred Cunningham and published its first newspaper in English on November 6th 1900. 115 years later it is one of the most important news portal in Hong Kong and was acquired by Alibaba in 2015. It set out to be a global media company that reports mainly about Hong Kong and mainland China to an international audience.  
+
 SCMP produces content that covers multiple topics such as business, technology, and lifestyle. In order to achieve its mission of becoming the bridge of communication between Asia and the world,  SCMP went through a series of transformations in 2018 that has allowed them to reach a broader audience.   
-In this project we analyzed the Twitter data from SCMP aiming to understand its Social Media Network. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities on how SCMP can capitalize on its social media strategy.    
-This article is divide in the following sections:    
+
+In this project we analyzed the Twitter data from SCMP aiming to understand its Social Media Network. Our goal was to  understand how the Twitter Users on SCMP's account behave and then find opportunities on how SCMP can capitalize on its social media strategy.
+
+This article is divided in the following sections:    
 - Data Extraction and Transformation   
 - Tools   
 - Overview   
