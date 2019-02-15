@@ -1,7 +1,7 @@
 ---
 title: "Social Media Project - SCMP"
 author: "Gabriela Mourao and Mawuli Adjei"
-date: "20 de January de 2019"
+date: "February 15th, 2019"
 output: 
       html_document:
             code_folding: show
@@ -34,7 +34,7 @@ a:visited {
 
 Later, Mawuli and I decided to use the project content to publish some articles that could be useful for other persons that are planning to develop similar studies. This will be the first of five different articles based in that project:   
 <br>
-- [Summary report](https://): In this article we focus on insights obtained through the analysis and its application to business. It works as a summary, without going too deep into technical aspects. Since we are students in a Business Analytics programme, we decided that it would be interesting to show a little of how analytics tools can be applied to give insights to business and support data drive strategies.
+- [Summary report](https://): In this article we focus on insights obtained through the analysis and its application to business. It works as a summary, without going too deep into technical aspects. Since we are students in a Business Analytics programme, we decided that it would be interesting to show a little of how analytics tools can be applied to give insights to business and support data drive strategies.    
 - [Topic Modeling](https://): In this article we are going to show in more detail how we used algorithms to perform topic modeling. It will be more technical and focused on a step by step break down of our R-script.  
 - [User Cluster](https://): Similar to the Topic Modeling article, in this one we are going to focus on the User Cluster Development.    
 - [Sentiment Analysis](https://): Again, this will be more technical article, focused both on the sentiment analysis and agreement analysis.    
@@ -105,7 +105,7 @@ library(ggpubr)
 ```
 
 ```{r, include = FALSE}
-setwd("C:/Users/gabriela.mourao/Documents/Twitter_template")
+setwd("C:/Users/gcmou/Documents/GitHub/Twitter_template")
 tweet <- read.csv("SCMPNews_tweet_data_full_new.csv")
 tweet$created_at <- as.POSIXct(as.character(levels(tweet$created_at)), format = "%Y-%m-%d %H:%M")[tweet$created_at]
 vertice <- read.csv("SCMPNews_vertices_data_full_new.csv")
