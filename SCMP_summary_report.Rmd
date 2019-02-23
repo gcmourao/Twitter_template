@@ -105,7 +105,7 @@ library(ggpubr)
 ```
 
 ```{r, include = FALSE}
-setwd("C:/Users/gcmou/Documents/GitHub/Twitter_template")
+#setwd("C:/Users/gcmou/Documents/GitHub/Twitter_template")
 tweet <- read.csv("SCMPNews_tweet_data_full_new.csv")
 tweet$created_at <- as.POSIXct(as.character(levels(tweet$created_at)), format = "%Y-%m-%d %H:%M")[tweet$created_at]
 vertice <- read.csv("SCMPNews_vertices_data_full_new.csv")
